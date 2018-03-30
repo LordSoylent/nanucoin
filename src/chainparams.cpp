@@ -56,11 +56,15 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     (18293, uint256("0x000000003e1b755cda6940588ea4849a85bcabbdad960ee942b299f4a2383a2e"))
     (43201, uint256("0x000000000d9a4d836f16e0436aa23fc5cc0d80ff6392987cadda86ffcf111a1a"))
     (71752, uint256("0x0000000006cad6d5e094674a8b75ef0aa995c48d6023731e5de8c3fb2c22e500"))
+   (108000, uint256("0x0000000007e1a116fddebc1882e4b432537cd2a0de2aa9895a89224e89938274"))
+   (129601, uint256("0x0000000006d55322bc78a79e2698d49f1a65875edc966948ed6f3f4dcdfb254a"))
+   (172801, uint256("0x00000000023d8523704efa9ecfe489e2851c76ec722e6a7f77a673d9e4f3e937"))
+   (188328, uint256("0x000000001cb938e4a38177a2d8e2da5129cdbd3a6607ec860c6c631466b19ff8"))
 ;
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1515067692, // * UNIX timestamp of last checkpoint block
+    1522421806, // * UNIX timestamp of last checkpoint block
     100000, // * total number of transactions between genesis and last checkpoint
     //   (the tx=... number in the SetBestChain debug.log lines)
     2000 // * estimated number of transactions per day after checkpoint
@@ -108,7 +112,7 @@ public:
         nMinerThreads = 0;
         nTargetTimespan = 1 * 60; // NanuCoin: 1 minute
         nTargetSpacing = 1 * 60; // NanuCoin: 1 minute
-        nLastPOWBlock = 259200;
+        nLastPOWBlock = 388800;
         nMaturity = 80;
         nModifierUpdateBlock = 1;
         const char* pszTimestamp = "NanuCoin 13112017";
@@ -130,6 +134,9 @@ public:
         assert(hashGenesisBlock == uint256("0x00000fce7c04cd554a8116fc888f0d52c93ee3d61989b5940c351f6c64a160df"));
         assert(genesis.hashMerkleRoot == uint256("0xc09b0e5aa184ff1370e44e5995c38542ee29647e5e4995b9207c5f817e1f7ebc"));
 
+        vSeeds.push_back(CDNSSeedData("seed1.nanucoin.com", "seed1.nanucoin.com"));
+        vSeeds.push_back(CDNSSeedData("seed2.nanucoin.com", "seed2.nanucoin.com"));
+        vSeeds.push_back(CDNSSeedData("seed3.nanucoin.com", "seed3.nanucoin.com"));
         vSeeds.push_back(CDNSSeedData("nanu.ddns.net", "nanu.ddns.net"));
         vSeeds.push_back(CDNSSeedData("nanu1.ddns.net", "nanu1.ddns.net"));
         vSeeds.push_back(CDNSSeedData("nanu2.ddns.net", "nanu2.ddns.net"));

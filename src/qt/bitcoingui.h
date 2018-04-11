@@ -93,6 +93,8 @@ private:
     QMenuBar* appMenuBar;
     QAction* overviewAction;
     QAction* historyAction;
+    QAction* exchangeAction;
+    QAction* gamesAction;
     QAction* masternodeAction;
     QAction* quitAction;
     QAction* sendCoinsAction;
@@ -199,6 +201,10 @@ private slots:
     void gotoHistoryPage();
     /** Switch to Explorer Page */
     void gotoBlockExplorerPage();
+    /** Switch to exchange page */
+    void gotoExchangePage();
+    /** Switch to games page */
+    void gotoGamesPage();
     /** Switch to masternode page */
     void gotoMasternodePage();
     /** Switch to receive coins page */

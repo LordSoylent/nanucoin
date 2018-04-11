@@ -19,6 +19,10 @@
 #include "rpcconsole.h"
 #include "utilitydialog.h"
 
+#ifdef Q_OS_WIN
+#include <shellapi.h>
+#endif
+
 #ifdef ENABLE_WALLET
 #include "blockexplorer.h"
 #include "walletframe.h"
@@ -79,6 +83,8 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
                                                                             appMenuBar(0),
                                                                             overviewAction(0),
                                                                             historyAction(0),
+                                                                            gamesAction(0),
+                                                                            exchangeAction(0),
                                                                             masternodeAction(0),
                                                                             quitAction(0),
                                                                             sendCoinsAction(0),
@@ -322,6 +328,20 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
 #endif
     tabGroup->addAction(historyAction);
+    
+    gamesAction = new QAction(QIcon(":/icons/games"), tr("&Chess/Poker"), this);
+    gamesAction->setStatusTip(tr("game.nanucoin.com"));
+    gamesAction->setToolTip(gamesAction->statusTip());
+    gamesAction->setCheckable(true);
+    tabGroup->addAction(gamesAction);
+    connect(gamesAction, SIGNAL(triggered()), this, SLOT(gotoGamesPage()));
+    
+    exchangeAction = new QAction(QIcon(":/icons/exchange"), tr("&"), this);
+    exchangeAction->setStatusTip(tr("nanu.exchange"));
+    exchangeAction->setToolTip(exchangeAction->statusTip());
+    exchangeAction->setCheckable(true);
+    tabGroup->addAction(exchangeAction);
+    connect(exchangeAction, SIGNAL(triggered()), this, SLOT(gotoExchangePage()));
 
 #ifdef ENABLE_WALLET
 
@@ -518,6 +538,8 @@ void BitcoinGUI::createToolBars()
         if (settings.value("fShowMasternodesTab").toBool()) {
             toolbar->addAction(masternodeAction);
         }
+        toolbar->addAction(gamesAction);
+        toolbar->addAction(exchangeAction);
         toolbar->setMovable(false); // remove unused icon in upper left corner
         overviewAction->setChecked(true);
 
@@ -604,6 +626,8 @@ void BitcoinGUI::setWalletActionsEnabled(bool enabled)
     sendCoinsAction->setEnabled(enabled);
     receiveCoinsAction->setEnabled(enabled);
     historyAction->setEnabled(enabled);
+    exchangeAction->setEnabled(enabled);
+    gamesAction->setEnabled(enabled);
     QSettings settings;
     if (settings.value("fShowMasternodesTab").toBool()) {
         masternodeAction->setEnabled(enabled);
@@ -734,6 +758,28 @@ void BitcoinGUI::gotoHistoryPage()
 {
     historyAction->setChecked(true);
     if (walletFrame) walletFrame->gotoHistoryPage();
+}
+
+void BitcoinGUI::gotoExchangePage()
+{
+    exchangeAction->setChecked(true);
+    #ifdef Q_OS_WIN
+    ShellExecute(NULL, "open", "https://nanu.exchange/exchange#btc_nnc", NULL, NULL, SW_SHOWNORMAL);
+    #endif
+    #ifdef Q_OS_LINUX
+    std::system("xdg-open https://nanu.exchange/exchange#btc_nnc");
+    #endif
+}
+
+void BitcoinGUI::gotoGamesPage()
+{
+    gamesAction->setChecked(true);
+    #ifdef Q_OS_WIN
+    ShellExecute(NULL, "open", "https://game.nanucoin.com", NULL, NULL, SW_SHOWNORMAL);
+    #endif
+    #ifdef Q_OS_LINUX
+    std::system("xdg-open http://game.nanucoin.com");
+    #endif
 }
 
 void BitcoinGUI::gotoMasternodePage()

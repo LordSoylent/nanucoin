@@ -51,7 +51,7 @@ Value mnbudget(const Array& params, bool fHelp)
     }
 
     if (strCommand == "prepare") {
-        return "budget disabled";
+        //return "budget disabled";
         
         int nBlockMin = 0;
         CBlockIndex* pindexPrev = chainActive.Tip();

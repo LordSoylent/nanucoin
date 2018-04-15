@@ -1990,8 +1990,8 @@ bool CWallet::GetBudgetSystemCollateralTX(CTransaction& tx, uint256 hash, bool u
 }
 
 bool CWallet::GetBudgetSystemCollateralTX(CWalletTx& tx, uint256 hash, bool useIX) {
-    LogPrintf("GetBudgetSystemCollateralTX: Error - #223\n");
-    return false;
+    //LogPrintf("GetBudgetSystemCollateralTX: Error - #223\n");
+    //return false;
 
     // make our change address
     CReserveKey reservekey(pwalletMain);

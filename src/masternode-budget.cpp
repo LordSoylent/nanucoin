@@ -27,11 +27,9 @@ int nSubmittedFinalBudget;
 
 int GetBudgetPaymentCycleBlocks() {
     // Amount of blocks in a months period of time (using 1 minutes per) = (60*24*30)
-    if (Params().NetworkID() == CBaseChainParams::MAIN) return 1143200;
-    //for testing purposes
+    if (Params().NetworkID() == CBaseChainParams::MAIN) return 10080;
 
-    return 50; //ten times per day
-    //return 144; //ten times per day
+    return 144; //ten times per day
 }
 
 bool IsBudgetCollateralValid(uint256 nTxCollateralHash, uint256 nExpectedHash, std::string& strError, int64_t& nTime, int& nConf) {
@@ -134,7 +132,8 @@ void CBudgetManager::SubmitFinalBudget() {
     int nBlockStart = nCurrentHeight - nCurrentHeight % GetBudgetPaymentCycleBlocks() + GetBudgetPaymentCycleBlocks();
     if (nSubmittedHeight >= nBlockStart) return;
     //submit final budget 2 days before payment for Mainnet, about 9 minutes for Testnet
-    if (nBlockStart - nCurrentHeight > ((GetBudgetPaymentCycleBlocks() / 30) * 2)) return;
+    //if (nBlockStart - nCurrentHeight > ((GetBudgetPaymentCycleBlocks() / 30) * 2)) return;
+    if (nBlockStart - nCurrentHeight > (GetBudgetPaymentCycleBlocks() / 7)) return;
 
     std::vector<CBudgetProposal*> vBudgetProposals = budget.GetBudget();
     std::string strBudgetName = "main";
@@ -174,7 +173,7 @@ void CBudgetManager::SubmitFinalBudget() {
         // make our change address
         CReserveKey reservekey(pwalletMain);
         //send the tx to the network
-        pwalletMain->CommitTransaction(wtx, reservekey, "ix");
+        pwalletMain->CommitTransaction(wtx, reservekey); //, "ix"); 
         tx = (CTransaction) wtx;
         txidCollateral = tx.GetHash();
         mapCollateralTxids.insert(make_pair(tempBudget.GetHash(), txidCollateral));
@@ -538,8 +537,7 @@ CBudgetProposal* CBudgetManager::FindProposal(uint256 nHash) {
 }
 
 bool CBudgetManager::IsBudgetPaymentBlock(int nBlockHeight) {
-    //int nHighestCount = -1;
-    int nHighestCount = 0;
+    int nHighestCount = -1;
 
     std::map<uint256, CFinalizedBudget>::iterator it = mapFinalizedBudgets.begin();
     while (it != mapFinalizedBudgets.end()) {
@@ -549,11 +547,9 @@ bool CBudgetManager::IsBudgetPaymentBlock(int nBlockHeight) {
                 nBlockHeight <= pfinalizedBudget->GetBlockEnd()) {
             nHighestCount = pfinalizedBudget->GetVoteCount();
         }
-        LogPrintf("----* fix 1votepass %s\n", nHighestCount);
         ++it;
     }
-    
-    LogPrintf("----* fix 1votepass s%s\n", nHighestCount);
+
 
     /*
         If budget doesn't have 5% of the network votes, then we should pay a masternode instead
@@ -610,7 +606,7 @@ bool CBudgetManager::IsTransactionValid(const CTransaction& txNew, int nBlockHei
     while (it != mapFinalizedBudgets.end()) {
         CFinalizedBudget* pfinalizedBudget = &((*it).second);
 
-        if (pfinalizedBudget->GetVoteCount() > nHighestCount - mnodeman.CountEnabled(ActiveProtocol()) / 10) {
+        if (pfinalizedBudget->GetVoteCount() > nHighestCount - ((double) mnodeman.CountEnabled(ActiveProtocol()) / 10)) {
             if (nBlockHeight >= pfinalizedBudget->GetBlockStart() && nBlockHeight <= pfinalizedBudget->GetBlockEnd()) {
                 if (pfinalizedBudget->IsTransactionValid(txNew, nBlockHeight)) {
                     return true;
@@ -796,7 +792,13 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight) {
         nSubsidy = 3 * COIN;
     } else if (nHeight <= 259199 && nHeight >= 216000) {
         nSubsidy = 2.5 * COIN;
-    } else if (nHeight >= 259200) {
+    } else if (nHeight <= 302399 && nHeight >= 259200) {
+        nSubsidy = 2 * COIN;
+    } else if (nHeight <= 345599 && nHeight >= 302400) {
+        nSubsidy = 1.5 * COIN;
+    } else if (nHeight <= 388799 && nHeight >= 345600) {
+        nSubsidy = 1 * COIN;
+    } else if (nHeight >= 388800) {
         nSubsidy = 0 * COIN;
         assert(false);
     }
@@ -805,7 +807,7 @@ CAmount CBudgetManager::GetTotalBudget(int nHeight) {
     //if (nHeight <= 172800) {
     //    return 648000 * COIN;
     //} else {
-    return ((nSubsidy / 100) * 10) * 1440 * 30;
+    return ((nSubsidy / 100) * 10) * 1440 * 7;
     //}
 }
 

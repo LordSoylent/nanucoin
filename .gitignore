@@ -14,3 +14,15 @@ depends/x86_64-w64-mingw32/
 *.lo
 
 *.a
+
+*.dirstamp
+
+autom4te\.cache/
+
+build-aux/
+
+depends/built/
+
+depends/sources/
+
+src/\.libs/

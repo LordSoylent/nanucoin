@@ -33,5 +33,5 @@ PoW/PoS Phase: Infinte temporarily disabled
 
 Masternodes: 10000 NNC collateral
 
-budget system DISABLE
+budget system ENABLED
 budget proposal fee 50.0 NNC

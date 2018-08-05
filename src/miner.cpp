@@ -124,7 +124,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         boost::this_thread::interruption_point();
         pblock->nTime = GetAdjustedTime();
         CBlockIndex* pindexPrev = chainActive.Tip();
-        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, fProofOfStake);
         CMutableTransaction txCoinStake;
         int64_t nSearchTime = pblock->nTime; // search to current time
         bool fStakeFound = false;
@@ -374,7 +374,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         pblock->hashPrevBlock = pindexPrev->GetBlockHash();
         if (!fProofOfStake) // nanuchange
             UpdateTime(pblock, pindexPrev);
-        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock, fProofOfStake);
         pblock->nNonce = 0;
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
@@ -482,6 +482,14 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake) {
 
             while (chainActive.Tip()->nTime < 1471482000 || vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || nReserveBalance >= pwallet->GetBalance() || !masternodeSync.IsSynced()) {
                 nLastCoinStakeSearchInterval = 0;
+                // Do a separate 1 minute check here to ensure fMintableCoins is updated 
+                if (!fMintableCoins) { 
+                    if (GetTime() - nMintableLastCheck > 1 * 60) // 1 minute check time 
+                    { 
+                        nMintableLastCheck = GetTime(); 
+                        fMintableCoins = pwallet->MintableCoins(); 
+                    } 
+                }
                 MilliSleep(5000);
                 if (!fGenerateBitcoins && !fProofOfStake)
                     continue;

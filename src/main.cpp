@@ -1623,7 +1623,25 @@ int64_t GetBlockValue(int nHeight) {
         nSubsidy = 1.5 * COIN;
     } else if (nHeight <= 388799 && nHeight >= 345600) {
         nSubsidy = 1 * COIN;
-    } else if (nHeight >= 388800) {
+    } else if (nHeight <= 431999 && nHeight >= 388800) {
+        nSubsidy = 0.95 * COIN;
+    } else if (nHeight <= 475199 && nHeight >= 432000) {
+        nSubsidy = 0.9 * COIN;
+    } else if (nHeight <= 518399 && nHeight >= 475200) {
+        nSubsidy = 0.85 * COIN;
+    } else if (nHeight <= 561599 && nHeight >= 518400) {
+        nSubsidy = 0.8 * COIN;
+    } else if (nHeight <= 604799 && nHeight >= 561600) {
+        nSubsidy = 0.75 * COIN;
+    } else if (nHeight <= 647999 && nHeight >= 604800) {
+        nSubsidy = 0.7 * COIN;
+    } else if (nHeight <= 691199 && nHeight >= 648000) {
+        nSubsidy = 0.65 * COIN;
+    } else if (nHeight <= 734399 && nHeight >= 691200) {
+        nSubsidy = 0.6 * COIN;
+    } else if (nHeight <= 777599 && nHeight >= 734400) {
+        nSubsidy = 0.55 * COIN;
+    } else if (nHeight >= 777600) {
         nSubsidy = 0 * COIN;
         assert(false);
     }
@@ -1658,7 +1676,7 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
         if (mNodeCoins == 0) {
             ret = 0;
         } else {
-            ret = blockValue * 0.4;
+            ret = blockValue * 0.7;
         }
     }
 
@@ -2075,14 +2093,13 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
         return true;
     }
 
-    //if (pindex->nHeight <= Params().LAST_POW_BLOCK() && block.IsProofOfStake())
-    if (block.IsProofOfStake())
+    if (pindex->nHeight <= Params().LAST_POW_BLOCK() && block.IsProofOfStake())
         return state.DoS(100, error("ConnectBlock() : PoS period not active"),
             REJECT_INVALID, "PoS-early");
 
-    if (pindex->nHeight > Params().LAST_POW_BLOCK() && block.IsProofOfWork())
-        return state.DoS(100, error("ConnectBlock() : PoW period ended"),
-            REJECT_INVALID, "PoW-ended"); //nanuchange
+//    if (pindex->nHeight > Params().LAST_POW_BLOCK() && block.IsProofOfWork())
+//        return state.DoS(100, error("ConnectBlock() : PoW period ended"),
+//            REJECT_INVALID, "PoW-ended"); //nanuchange
 
     bool fScriptChecks = pindex->nHeight >= Checkpoints::GetTotalBlocksEstimate();
 
@@ -3159,7 +3176,7 @@ bool CheckWork(const CBlock block, CBlockIndex * const pindexPrev) {
     if (pindexPrev == NULL)
         return error("%s : null pindexPrev for block %s", __func__, block.GetHash().ToString().c_str());
 
-    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block);
+    unsigned int nBitsRequired = GetNextWorkRequired(pindexPrev, &block, block.IsProofOfStake());
 
     if (block.IsProofOfWork() && (pindexPrev->nHeight + 1 <= 68589)) {
         double n1 = ConvertBitsToDouble(block.nBits);

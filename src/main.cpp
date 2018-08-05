@@ -1665,6 +1665,14 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
     return ret;
 }
 
+// ppcoin: find last block index up to pindex 
+const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfStake) { 
+    while (pindex && pindex->pprev && (pindex->IsProofOfStake() != fProofOfStake)){ 
+        pindex = pindex->pprev; 
+    } 
+    return pindex; 
+} 
+
 bool IsInitialBlockDownload() {
     LOCK(cs_main);
     if (fImporting || fReindex || chainActive.Height() < Checkpoints::GetTotalBlocksEstimate())

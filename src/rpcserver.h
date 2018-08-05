@@ -139,7 +139,7 @@ extern CAmount AmountFromValue(const json_spirit::Value& value);
 extern json_spirit::Value ValueFromAmount(const CAmount& amount);
 extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
 
-//extern double GetPoWMHashPS(); // nanuchange
+extern double GetPoWMHashPS(); // nanuchange
 extern double GetPoSKernelPS(); // nanuchange
 
 extern std::string HelpRequiringPassphrase();

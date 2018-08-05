@@ -30,7 +30,7 @@ double GetDifficulty(const CBlockIndex* blockindex)
         if (chainActive.Tip() == NULL)
             return 1.0;
         else
-            blockindex = chainActive.Tip();
+            blockindex = GetLastBlockIndex(chainActive.Tip(), false); //chainActive.Tip();
     }
 
     int nShift = (blockindex->nBits >> 24) & 0xff;
@@ -49,6 +49,32 @@ double GetDifficulty(const CBlockIndex* blockindex)
 
     return dDiff;
 }
+
+double GetPoWMHashPS() { 
+//    if (pindexBest->nHeight >= Params().EndPoWBlock()) 
+//        return 0; 
+ 
+    int nPoWInterval = 60; 
+    int64_t nTargetSpacingWorkMin = 30, nTargetSpacingWork = 30; 
+ 
+    CBlockIndex* pindex = chainActive.Genesis(); // pindexGenesisBlock;
+    CBlockIndex* pindexPrevWork = chainActive.Genesis(); // pindexGenesisBlock;
+ 
+    while (pindex && pindex->nHeight < chainActive.Tip()->nHeight) 
+    { 
+        if (pindex->IsProofOfWork()) 
+        { 
+            int64_t nActualSpacingWork = pindex->GetBlockTime() - pindexPrevWork->GetBlockTime(); 
+            nTargetSpacingWork = ((nPoWInterval - 1) * nTargetSpacingWork + nActualSpacingWork + nActualSpacingWork) / (nPoWInterval + 1); 
+            nTargetSpacingWork = max(nTargetSpacingWork, nTargetSpacingWorkMin); 
+            pindexPrevWork = pindex; 
+        } 
+ 
+        pindex = pindex->pnext; 
+    } 
+ 
+    return GetDifficulty() * 4294.967296 / nTargetSpacingWork; 
+} 
 
 double GetPoSKernelPS()
 {

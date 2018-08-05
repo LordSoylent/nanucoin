@@ -83,7 +83,7 @@ unsigned int static DarkGravityWave(const CBlockIndex* pindexLast)
             assert(BlockReading);
             break;
         }
-        BlockReading = BlockReading->pprev;
+        BlockReading = GetLastBlockIndex(BlockReading->pprev, false); //BlockReading->pprev;
     }
 
     uint256 bnNew(PastDifficultyAverage);
@@ -106,9 +106,10 @@ unsigned int static DarkGravityWave(const CBlockIndex* pindexLast)
     return bnNew.GetCompact();	
 }
 	
-unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock)
+unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHeader* pblock, bool fProofOfStake)
 {
-	return DarkGravityWave(pindexLast);
+    const CBlockIndex* pindexPrev = GetLastBlockIndex(pindexLast, fProofOfStake); 
+    return DarkGravityWave(pindexPrev); //return DarkGravityWave(pindexLast);
 }
 
 bool CheckProofOfWork(uint256 hash, unsigned int nBits)

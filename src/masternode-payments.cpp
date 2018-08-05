@@ -311,7 +311,11 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
             txNew.vout.resize(2);
             txNew.vout[1].scriptPubKey = payee;
             txNew.vout[1].nValue = masternodePayment;
-            txNew.vout[0].nValue = blockValue - masternodePayment + nFees;
+            if (pindexPrev->nHeight + 1 > Params().LAST_POW_BLOCK()) { 
+                txNew.vout[0].nValue = blockValue - masternodePayment; 
+            } else { 
+                txNew.vout[0].nValue = blockValue - masternodePayment + nFees; 
+            }
         }
 
         CTxDestination address1;
@@ -321,7 +325,11 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
         LogPrintf("Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), address2.ToString().c_str());
     } else {
         if (!fProofOfStake) {
-            txNew.vout[0].nValue = blockValue + nFees;
+            if (pindexPrev->nHeight + 1 > Params().LAST_POW_BLOCK()) { 
+                txNew.vout[0].nValue = blockValue; 
+            } else { 
+                txNew.vout[0].nValue = blockValue + nFees; 
+            } 
             //txNew.vout[0].nValue = blockValue - masternodePayment + nFees;
         } else {
             //unsigned int i = txNew.vout.size();

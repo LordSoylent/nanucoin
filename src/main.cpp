@@ -1676,7 +1676,7 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
         if (mNodeCoins == 0) {
             ret = 0;
         } else {
-            ret = blockValue * 0.7;
+            ret = blockValue / 100 * 70;
         }
     }
 
